@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Generation of project";
+}
+@using (Html.BeginForm("Index", "Home", FormMethod.Post)) 
+{
+<h2>@ViewData["Title"]</h2>
+    <fieldset>
+    <div>
+    <p><label for="path">Enter the path to folder where create the project: </label></p>
+    <p><input type="text" name="path" value="" /></p>
+    @Html.ValidationMessage("path")
+    </div>
+    <div>
+    <p><b>Enter your project name:</b></p>
+    <p><textarea rows="10" cols="45" name="projectName"></textarea></p>
+    @Html.ValidationMessage("projectName")
+    </div>
+    <div>
+    <p><b>Enter your bdd request to generate project:</b></p>
+    <p><textarea rows="10" cols="45" name="bddrequest"></textarea></p>
+    @Html.ValidationMessage("bddrequest")
+    </div>
+     <div>
+     <p><input type="submit" value="Submit request"></p>
+    </div>
+    </fieldset>
+}

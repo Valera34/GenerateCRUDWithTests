@@ -1,0 +1,171 @@
+<#@ template language="C#"  hostspecific="true" debug="true" #>
+<#@ output extension="cs" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text" #> 
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ assembly name="C:\Users\mac\Documents\GitHub\FrameworkForGenerationCRUD\bin\Debug\netcoreapp2.1\FrameworkForGenerationCRUD.dll" #>
+<#@ import namespace="FrameworkForGenerationCRUD" #>
+<#
+ string str="";
+ int i=0;
+ var project="2";
+ using (StreamReader sr = new StreamReader("Info.txt"))
+            {
+                str = sr.ReadToEnd();
+            }
+ using (StreamReader pr = new StreamReader("ProjectName.txt"))
+            {
+           project = pr.ReadLine() ?? "";
+            }
+Parser pars=new Parser();
+Model[] mds=pars.parseString(str);
+#>
+using System;
+using TechTalk.SpecFlow;
+using TechTalk.SpecFlow.Assist;
+using System.Net.Http;
+using System.Text;
+using System.Net.Http.Headers;
+using System.Collections.Generic;
+using NUnit.Framework;
+using System.Net;
+using Newtonsoft.Json;
+using System.Reflection;
+using <#= project #>.Models;
+using Microsoft.AspNetCore.Mvc;
+using <#= project #>.Controllers;
+using <#= project #>.Data;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Collections;
+using Microsoft.Data.Sqlite;
+
+namespace ResearchLinks.SpecTests
+{
+    [Binding]
+    public class CrudTesting
+    {
+        private NotFoundResult _responseContent;
+
+         private <#=project#>Context _context;
+         private string _returnedPage;
+        <# foreach ( Model md in mds ) { #>
+         private <#= md.Name #>Controller  controller<#= md.Name #>;
+         private <#= md.Name #> _saved<#= md.Name #>;
+         private <#= md.Name #> _testModel<#= md.Name #> = new <#= md.Name #>();
+         private List<<#= md.Name #>> _dto<#= md.Name #>;
+         <#  } #>
+
+         private DbContextOptions<<#=project#>Context> options;
+
+      private SqliteConnection connection= new SqliteConnection("DataSource=:memory:");
+            CrudTesting(){
+            connection.Open();
+
+            
+                options = new DbContextOptionsBuilder<<#=project#>Context>()
+                    .UseSqlite(connection)
+                    .Options;
+
+                using (var context = new <#=project#>Context(options))
+                {
+                    context.Database.EnsureCreated();
+                }
+ 
+         _context = new <#=project#>Context(options);
+        <# foreach ( Model md in mds ) { #>
+         controller<#= md.Name #>=new <#= md.Name #>Controller(_context);
+         <#  } #>
+         }
+         
+        [Then(@"a (.*) page should be returned")]
+        public void ThenAPageShouldBeReturned(string redirectedPage)
+        {
+          Assert.AreEqual(redirectedPage, _returnedPage);
+        }
+
+         [Then(@"a (.*) status should be returned")]
+        public void ThenAStatusShouldBeReturned(string statusCode)
+        {
+           Assert.AreEqual(statusCode, _responseContent.StatusCode.ToString());
+        }
+
+        <# foreach ( Model md in mds ) { #>
+        [Given(@"the following <#= md.Name #> fields")]
+        public void GivenTheFollowing<#= md.Name #>Fields(Table table)
+        {
+            table.FillInstance(_testModel<#= md.Name #>);
+        }
+
+        [When(@"the user gets the <#= md.Name #> by ID")]
+        public void WhenTheUserGetsThe<#= md.Name #>ByID()
+        {
+           try{
+           var result =  controller<#= md.Name #>.Details(_testModel<#= md.Name #>.<#= md.Name #>Id).Result as ViewResult;
+            var model = (<#= md.Name #>) result.ViewData.Model;
+           _saved<#= md.Name #>=model;
+           }
+           catch{
+               var result =  controller<#= md.Name #>.Details(_testModel<#= md.Name #>.<#= md.Name #>Id).Result as NotFoundResult;
+               _responseContent =result;
+           }
+           
+        }
+
+        [Then(@"the saved <#= md.Name #> matches the inputs")]
+        public void ThenTheSaved<#= md.Name #>MatchesTheInputs()
+        {
+              Assert.AreEqual(_testModel<#= md.Name #>, _saved<#= md.Name #>);
+        }
+
+        [When(@"the user gets all <#= md.Name #>s")]
+        public void WhenTheUserGetsAll<#= md.Name #>s()
+        {
+           var result =  controller<#= md.Name #>.Index().Result as ViewResult;
+           var model = (List<<#= md.Name #>>) result.ViewData.Model;
+           Console.WriteLine(model[0]);
+           _dto<#= md.Name #> = model;
+        }
+
+        [Then(@"the saved <#= md.Name #> should be in the list")]
+        public void ThenTheSaved<#= md.Name #>ShouldBeInTheList()
+        {
+            Assert.AreEqual(1, _dto<#= md.Name #>.Count);
+            Assert.AreEqual(_testModel<#= md.Name #>, _dto<#= md.Name #>[0]);
+        }
+
+        [When(@"user delete <#= md.Name #> fields")]
+        public void WhenUserDelete<#= md.Name #>Fields()
+        {
+            var result =  controller<#= md.Name #>.DeleteConfirmed(_testModel<#= md.Name #>.<#= md.Name #>Id).Result as RedirectToActionResult;
+             _returnedPage=result.ActionName;
+        }
+
+        [When(@"the user posts the <#= md.Name #> fields on the view")]
+        public void WhenTheUSerPostsThe<#= md.Name #>FieldsOnTheView()
+        {    
+            var result = controller<#= md.Name #>.Create(_testModel<#= md.Name #>).Result  as RedirectToActionResult;
+              _returnedPage=result.ActionName;
+        }
+
+        [When(@"the user puts the <#= md.Name #> fields on the view")]
+        public void WhenTheUserPutsThe<#= md.Name #>FieldsOnTheView()
+        {
+              var result = controller<#= md.Name #>.Edit(_testModel<#= md.Name #>.<#= md.Name #>Id,_testModel<#= md.Name #>).Result  as RedirectToActionResult;
+              _returnedPage=result.ActionName;
+        }
+        <# 
+    } #>
+    }
+}
+    
+
+
+
+    

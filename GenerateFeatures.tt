@@ -1,0 +1,162 @@
+<#@ template language="C#"  hostspecific="true" debug="true" #>
+<#@ output extension="feature" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text" #> 
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ assembly name="C:\Users\mac\Documents\GitHub\FrameworkForGenerationCRUD\bin\Debug\netcoreapp2.1\FrameworkForGenerationCRUD.dll" #>
+<#@ import namespace="FrameworkForGenerationCRUD" #>
+<#
+ string str="";
+ int i=0;
+ using (StreamReader sr = new StreamReader("Info.txt"))
+            {
+                str = sr.ReadToEnd();
+            }
+Parser pars=new Parser();
+#>
+Feature: CRUD Test
+      In order to use CRUD operations in razor pages
+      As a user of the MVC
+      I want to be able to Create, Update, Delete, and get Lists
+<# foreach ( Model md in pars.parseString(str) ) { #>
+    <# 
+    i++;
+    var uniqueStr=generateString();
+    var uniqueDouble=generateDouble();
+    var uniqueInt=generateInt();
+    var uniqueId=generateInt();
+    var uniqueBool=generateBool();
+    var uniqueChar=generateChar();#>
+    <# var uniqueStrPut=generateString();
+    var uniqueDoublePut=generateDouble();
+    var uniqueIntPut=generateInt();
+    var uniqueBoolPut=generateBool();
+    var uniqueCharPut=generateChar();#>
+
+  Scenario: Create a new <#= md.Name #> and return Index page.
+      Given the following <#= md.Name #> fields
+          | Field       | Value            |
+          | <#= md.Name #>Id  | <#=uniqueId#>        |
+<# foreach ( Field f in md.Field ) { #>
+    <#if(f.Type==Types.String){#>       | <#=f.Name#>     | <#=uniqueStr#>        | <#}#> 
+    <#if(f.Type==Types.Double){#>       | <#=f.Name#>     | <#=uniqueDouble#>        | <#}#> 
+    <#if(f.Type==Types.Int){#>       | <#=f.Name#>     | <#=uniqueInt#>        | <#}#> 
+    <#if(f.Type==Types.Bool){#>       | <#=f.Name#>     | <#=uniqueBool#>        | <#}#>
+    <#if(f.Type==Types.Char){#>       | <#=f.Name#>     | <#=uniqueChar#>        | <#}#>
+<# } #>
+      When the user posts the <#= md.Name #> fields on the view
+      Then a Index page should be returned
+      When the user gets the <#= md.Name #> by ID
+      Then the saved <#= md.Name #> matches the inputs
+
+ Scenario: Get <#= md.Name #>s contains created <#= md.Name #>
+	Given the following <#= md.Name #> fields
+	      | Field       | Value            |
+          | <#= md.Name #>Id  | <#=uniqueId#>        |
+    <# foreach ( Field f in md.Field ) { #>
+    <#if(f.Type==Types.String){#>       | <#=f.Name#>     | <#=uniqueStr#>        | <#}#> 
+    <#if(f.Type==Types.Double){#>       | <#=f.Name#>     | <#=uniqueDouble#>        | <#}#> 
+    <#if(f.Type==Types.Int){#>       | <#=f.Name#>     | <#=uniqueInt#>        | <#}#> 
+    <#if(f.Type==Types.Bool){#>       | <#=f.Name#>     | <#=uniqueBool#>        | <#}#>
+    <#if(f.Type==Types.Char){#>       | <#=f.Name#>     | <#=uniqueChar#>        | <#}#>
+    <# } #>
+	When the user posts the <#= md.Name #> fields on the view
+	Then a Index page should be returned
+	When the user gets all <#= md.Name #>s
+	Then the saved <#= md.Name #> should be in the list
+
+    Scenario: Put <#= md.Name #> saves put values as edited
+	Given the following <#= md.Name #> fields
+		  | Field       | Value            |
+          | <#= md.Name #>Id  | <#=uniqueId#>        |
+    <# foreach ( Field f in md.Field ) { #>
+    <#if(f.Type==Types.String){#>       | <#=f.Name#>     | <#=uniqueStr#>        | <#}#> 
+    <#if(f.Type==Types.Double){#>       | <#=f.Name#>     | <#=uniqueDouble#>        | <#}#> 
+    <#if(f.Type==Types.Int){#>       | <#=f.Name#>     | <#=uniqueInt#>        | <#}#> 
+    <#if(f.Type==Types.Bool){#>       | <#=f.Name#>     | <#=uniqueBool#>        | <#}#>
+    <#if(f.Type==Types.Char){#>       | <#=f.Name#>     | <#=uniqueChar#>        | <#}#>  
+    <# } #>
+	When the user posts the <#= md.Name #> fields on the view
+	Then a Index page should be returned
+	When the user gets the <#= md.Name #> by ID
+	Then the saved <#= md.Name #> matches the inputs
+	Given the following <#= md.Name #> fields
+		  | Field       | Value            |
+          | <#= md.Name #>Id  | <#=uniqueId#>        |
+    <# foreach ( Field f in md.Field ) { #>
+    <#if(f.Type==Types.String){#>       | <#=f.Name#>     | <#=uniqueStrPut#>        | <#}#> 
+    <#if(f.Type==Types.Double){#>       | <#=f.Name#>     | <#=uniqueDoublePut#>        | <#}#> 
+    <#if(f.Type==Types.Int){#>       | <#=f.Name#>     | <#=uniqueIntPut#>        | <#}#> 
+    <#if(f.Type==Types.Bool){#>       | <#=f.Name#>     | <#=uniqueBoolPut#>        | <#}#>
+    <#if(f.Type==Types.Char){#>       | <#=f.Name#>     | <#=uniqueCharPut#>        | <#}#>  
+    <# } #>
+	When the user puts the <#= md.Name #> fields on the view
+	Then a Index page should be returned
+	When the user gets the <#= md.Name #> by ID
+	Then the saved <#= md.Name #> matches the inputs
+
+    Scenario: Delete <#= md.Name #> from database
+	Given the following <#= md.Name #> fields
+		  | Field       | Value            |
+          | <#= md.Name #>Id  | <#=uniqueId#>        |
+    <# foreach ( Field f in md.Field ) { #>
+    <#if(f.Type==Types.String){#>       | <#=f.Name#>     | <#=uniqueStr#>        | <#}#> 
+    <#if(f.Type==Types.Double){#>       | <#=f.Name#>     | <#=uniqueDouble#>        | <#}#> 
+    <#if(f.Type==Types.Int){#>       | <#=f.Name#>     | <#=uniqueInt#>        | <#}#> 
+    <#if(f.Type==Types.Bool){#>       | <#=f.Name#>     | <#=uniqueBool#>        | <#}#>
+    <#if(f.Type==Types.Char){#>       | <#=f.Name#>     | <#=uniqueChar#>        | <#}#>  
+    <# } #>
+	When the user posts the <#= md.Name #> fields on the view
+	Then a Index page should be returned
+	When the user gets the <#= md.Name #> by ID
+	Then the saved <#= md.Name #> matches the inputs
+	Given the following <#= md.Name #> fields
+		  | Field       | Value            |
+	When user delete <#= md.Name #> fields
+	Then a Index page should be returned
+	When the user gets the <#= md.Name #> by ID
+	Then a 404 status should be returned
+    
+<# 
+    } #>
+
+<#+
+   private string generateString(){
+    Guid g = Guid.NewGuid();
+    string uniqueStr = Convert.ToBase64String(g.ToByteArray());
+    uniqueStr = uniqueStr.Replace("=","");
+    uniqueStr = uniqueStr.Replace("+","");
+    return uniqueStr;
+   }
+   private double generateDouble()
+   {
+    Random random = new Random();
+    var next = random.NextDouble();
+    double minValue=0.12324;
+    double maxValue=10.78453;
+    return minValue + (next * (maxValue - minValue));
+   }
+
+    private int generateInt()
+   {
+    Random random = new Random();
+    int generated  = random.Next(1, 100);
+    return generated;
+   }
+
+   private bool generateBool(){
+   Random random = new Random();
+   return random.Next(100) <= 20 ? true : false;
+   }
+
+   private char generateChar(){
+   Random random = new Random();
+   char ch = (char)random.Next('a','z'); 
+   return ch;
+   }
+#>
