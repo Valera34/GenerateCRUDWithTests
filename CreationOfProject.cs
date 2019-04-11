@@ -38,6 +38,7 @@ namespace FrameworkForGenerationCRUD
             StringBuilder sb = new StringBuilder();
             sb.Append(" dotnet tt GenerateFeatures.tt "+ Environment.NewLine);
             sb.Append(" dotnet tt GenerateTests.tt "+ Environment.NewLine);
+            sb.Append( path[0] + @":" + Environment.NewLine);
             sb.Append(" cd " + path + Environment.NewLine);
             sb.Append(" mkdir " + projectName + Environment.NewLine);
             sb.Append(" cd " + path + @"\" + projectName + Environment.NewLine);
@@ -50,6 +51,7 @@ namespace FrameworkForGenerationCRUD
         {
             string mainPath = System.IO.Directory.GetCurrentDirectory();
             StringBuilder sb = new StringBuilder();
+            sb.Append( path[0] + @":" + Environment.NewLine);
             sb.Append(" cd " + path + Environment.NewLine);
             sb.Append(" dotnet restore" + Environment.NewLine);
             foreach (string entity in entities)

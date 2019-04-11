@@ -2,7 +2,4 @@ Entity:  Customer(  Username:   string, Surname:string,   Age:integer);@
 
 Entity:User(Username:string,  Surname:string, Age:integer,Password:integer);@
 
-Entity:Me(Name:string,Ekma:string,Dde:integer,Hehe:integer);@
-
-Entity:mehgh(Ddsfbe:char,abc:double,dbe:double,Hehe:integer);
-
+Entity:Me(Name:string,Ekma:string,Dde:integer,Hehe:integer);

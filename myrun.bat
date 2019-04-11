@@ -1,7 +1,8 @@
  dotnet tt GenerateFeatures.tt 
  dotnet tt GenerateTests.tt 
- cd C:/Users/mac/Desktop
- mkdir MainAll
- cd C:/Users/mac/Desktop\MainAll
+D:
+ cd D:/Files
+ mkdir ProjectThatWork
+ cd D:/Files\ProjectThatWork
  dotnet new mvc
  Exit
